@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="80dp"
+              android:orientation="vertical"
+              tools:background="@color/colorBackground">
+
+    <TextView
+        android:id="@+id/item_sensorList_textView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center_vertical"
+        android:padding="10dp"
+        android:textColor="@color/colorText"
+        android:textSize="18sp"
+        tools:text="Sensor text here"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/colorText"/>
+
+</LinearLayout>

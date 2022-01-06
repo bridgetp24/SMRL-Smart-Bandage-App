@@ -1,0 +1,36 @@
+<resources>
+    <string name="app_name">Smart Bandage <Reader></Reader></string>
+    <string name="title_activity_ecg">ECGActivity</string>
+    <string name="instructions_text">This app demonstrates the use of ECG API on Movesense sensor. First scan for BLE devices and then connect to it by clicking it on the list. After connection in established, ECG view will open.</string>
+    <string name="battery_energy">Battery</string>
+    <string name="ecg">ECG</string>
+    <string name="battery_value">Battery value : </string>
+    <string name="exit">Exit</string>
+    <string name="disconnect_dialog_text">Leaving from this view will disconnect You with device. Are You sure want leave?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="btn_get">Get</string>
+    <string name="refresh_files">Refresh Files</string>
+    <string name="please_wait_connecting">Connecting may take 10-30s \nPlease Wait...</string>
+    <string name="connecting">Connecting</string>
+    <string name="deviceInfo">"Device Information</string>
+    <string name="title_location_permission">Location permission</string>
+    <string name="text_location_permission">Bluetooth LE scanning requires location permission</string>
+    <string name="btn_ok">OK</string>
+    <string name="ble_devices">Bluetooth Devices</string>
+    <string name="Saved_Data">Saved Data</string>
+    <string name="bluetooth_connect">Bluetooth Connect</string>
+    <string name="read">Read</string>
+    <string name="test_heart_rate">Test: Heart Rate</string>
+    <string name="beat_interval">Beat interval:</string>
+    <string name="note_text">Important Note:\n  On some phones Subscripton with rate higher than 104 Hz can cause Bluetooth connection problem and restart app might be required.</string>
+    <string name="rate">Rate:</string>
+    <string name="subscribe">Subscribe</string>
+    <string name="heart_rate">Heart rate:</string>
+    <string name="please_wait">Please Wait...</string>
+    <string name="loading_information">Loading information...</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="write_external_storage_permission_title">Write External Storage Permission</string>
+    <string name="write_external_storage_permission_text">Saving files required Write External Storage Permission</string>
+
+</resources>

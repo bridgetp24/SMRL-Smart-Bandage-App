@@ -1,0 +1,5 @@
+<resources>
+    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="mainView_card_height">160dp</dimen>
+    <dimen name="spinner_width">108dp</dimen>
+</resources>

@@ -1,0 +1,3 @@
+include ':mdslib-1.44.0(1)-release'
+include ':app'
+rootProject.name = "ECGReader"

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorMainViewCardBackground"
+    android:orientation="vertical"
+    android:padding="6dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/ecg"
+            android:textColor="@android:color/white"
+            android:textSize="18sp"/>
+
+        <ImageView
+            android:id="@+id/ecg_changeScreenOrientation"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="10dp"
+            android:src="@drawable/ic_screen_rotation_white_24dp"/>
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/connected_device_name_textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="6dp"
+        android:layout_marginTop="4dp"
+        android:textColor="@android:color/white"
+        android:textSize="16sp"
+        tools:text="E5:92:291:30:21"/>
+
+
+    <LinearLayout
+        android:id="@+id/ecg_switchContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal">
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/switchSubscription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:text="@string/subscribe"
+            android:textColor="@android:color/white"/>
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/ecg_spinnerText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/rate"
+        android:textColor="@android:color/white"/>
+
+    <Spinner
+        android:id="@+id/spinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+
+    <TextView
+        android:id="@+id/heart_rate_textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="@string/heart_rate"
+        android:textColor="@color/tangerine"
+        android:textSize="16sp"/>
+
+    <TextView
+        android:id="@+id/rr_textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="Body sensor location: "
+        android:textColor="@color/tangerine"
+        android:textSize="16sp"/>
+
+    <com.jjoe64.graphview.GraphView
+        android:id="@+id/ecg_lineChart"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+</LinearLayout>

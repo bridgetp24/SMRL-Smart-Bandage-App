@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:background="@color/colorBackground"
+                android:orientation="vertical"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp">
+
+    <ImageView
+        android:id="@+id/movesense_image"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_centerVertical="true"
+        android:src="@drawable/smart_mat_logo"/>
+
+    <TextView
+        android:id="@+id/movesense_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/movesense_address"
+        android:layout_alignTop="@+id/movesense_image"
+        android:textColor="@color/colorText"
+        android:textSize="24sp"
+        tools:text="@string/ble_devices"/>
+
+    <TextView
+        android:id="@+id/movesense_address"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/movesense_name"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="4dp"
+        android:layout_toRightOf="@id/movesense_image"
+        android:textColor="@color/colorText"
+        tools:text="21:21:34:21"/>
+
+    <TextView
+        android:id="@+id/movesense_rsid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/movesense_address"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="4dp"
+        android:layout_toRightOf="@id/movesense_image"
+        android:textColor="@color/colorText"
+        tools:text="40"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_alignParentBottom="true"
+        android:background="@android:color/white"/>
+
+</RelativeLayout>

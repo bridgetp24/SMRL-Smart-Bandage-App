@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorBackground"
+    android:padding="8dp">
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="8dp">
+
+        <!--1-->
+        <LinearLayout
+            android:id="@+id/mainView_ll1"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/mainView_card_height"
+            android:orientation="horizontal"
+            android:weightSum="2">
+
+            <RelativeLayout
+                android:id="@+id/mainView_movesense_Ll"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_margin="4dp"
+                android:layout_weight="1"
+                android:background="@color/colorMainViewCardBackground"
+                android:gravity="center"
+                android:onClick="onViewClicked">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_above="@id/mainView_movesense_text"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/flash_circle" />
+
+                <TextView
+                    android:id="@+id/mainView_movesense_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentBottom="true"
+                    android:background="#3d545252"
+                    android:gravity="center"
+                    android:padding="6dp"
+                    android:text="@string/bluetooth_connect"
+                    android:textColor="@color/colorText"
+                    android:textSize="16sp" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/mainView_multiConnection_Ll"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_margin="4dp"
+                android:layout_weight="1"
+                android:background="@color/colorMainViewCardBackground"
+                android:gravity="center">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_above="@id/mainView_multiConnection_text"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/google_circles" />
+
+
+                <TextView
+                    android:id="@+id/mainView_multiConnection_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentBottom="true"
+                    android:background="#3d545252"
+                    android:gravity="center"
+                    android:padding="6dp"
+                    android:text="Multi Connection"
+                    android:textColor="@color/colorText"
+                    android:textSize="16sp" />
+
+            </RelativeLayout>
+        </LinearLayout>
+
+        <!--2-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/mainView_card_height"
+            android:orientation="horizontal"
+            android:weightSum="2">
+
+            <RelativeLayout
+                android:id="@+id/mainView_savedData_Ll"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="4dp"
+                android:layout_weight="1"
+                android:background="@color/colorMainViewCardBackground"
+                android:gravity="center">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_above="@id/mainView_savedData_text"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/baseline_poll_24" />
+
+                <TextView
+                    android:id="@+id/mainView_savedData_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentBottom="true"
+                    android:background="#3d545252"
+                    android:gravity="center"
+                    android:padding="6dp"
+                    android:text="@string/Saved_Data"
+                    android:textColor="@color/colorText"
+                    android:textSize="16sp" />
+
+            </RelativeLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="125dp"
+        android:layout_height="125dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="12dp"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.475"
+        app:srcCompat="@drawable/smart_mat_logo" />
+
+    <TextView
+        android:id="@+id/mainHeading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="44dp"
+        android:layout_marginEnd="12dp"
+        android:background="#3d545252"
+        android:gravity="center"
+        android:padding="6dp"
+        android:text="Smart Materials and\n and Robotics Laboratory "
+        android:textColor="@color/colorText"
+        android:textSize="19dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+<![CDATA[
+
+    />
+
+]]>
+</androidx.constraintlayout.widget.ConstraintLayout>
