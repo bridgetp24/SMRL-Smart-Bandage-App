@@ -66,6 +66,25 @@ public class GattUtils {
         }
 
     }
+    private static void writeDeviceAsBytes(UUID characteristicUUID, TextView textView, Observable<RxBleConnection> connectionObservable, CompositeDisposable compositeDisposable, RxBleDevice bleDevice,byte[] bytesToWrite) {
+        // write to device characteristic UUID
+        // read device info
+        if(isConnected(bleDevice)) {
+            final Disposable disposable = connectionObservable
+                    .firstOrError()
+                    .flatMap(rxBleConnection -> rxBleConnection.writeCharacteristic(characteristicUUID,bytesToWrite))
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(bytes -> {
+
+                    }, GattUtils::onConnectionFailure);
+
+            compositeDisposable.add(disposable);
+
+        }else {
+            Log.d(TAG, "Device not connected");
+        }
+    }
+
     private static void readDeviceInfoAsBytes(UUID characteristicUUID, TextView textView, Observable<RxBleConnection> connectionObservable, CompositeDisposable compositeDisposable, RxBleDevice bleDevice) {
         // read device info
         if(isConnected(bleDevice)) {

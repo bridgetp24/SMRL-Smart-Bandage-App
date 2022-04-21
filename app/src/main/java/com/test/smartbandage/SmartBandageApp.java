@@ -37,7 +37,7 @@ public class SmartBandageApp extends Application{
         copyRawResourceToFile(R.raw.kompostisettings, "KompostiSettings.xml");
         FirebaseApp.initializeApp(this);
         if (user == null) {
-           // user = new User();
+            user = new User();
         }
 
     }
@@ -52,16 +52,30 @@ public class SmartBandageApp extends Application{
         return application.rxBleClient;
     }
     private void initGattUUIDs() {
+        // notable
+        // 7B6A092E-5FC8-BCBB-C58B-03BE82A8DD16
         // init map of gatt characteristics
         gattServices.put("deviceInfo",UUID.fromString("0000180a-0000-1000-8000-00805f9b34fb"));
         gattServices.put("manufacturerName",UUID.fromString("00002a29-0000-1000-8000-00805f9b34fb"));
         gattServices.put("systemID",UUID.fromString("00002a23-0000-1000-8000-00805f9b34fb"));
         gattServices.put("battery",UUID.fromString("00002a19-0000-1000-8000-00805f9b34fb"));
-        gattServices.put("heartRate",UUID.fromString("00002a37-0000-1000-8000-00805f9b34fb"));
+        gattServices.put("ECG",UUID.fromString("00002a37-0000-1000-8000-00805f9b34fb"));
+        //
+        // these are in smart-bandage prototype
         gattServices.put("bodySensorLocation",UUID.fromString("00002a38-0000-1000-8000-00805f9b34fb"));
         gattServices.put("heartRateControlPoint",UUID.fromString("00002a39-0000-1000-8000-00805f9b34fb"));
-        //gattServices.put("movesenseHRUUID",UUID.fromString("209dB857-c990-7a3b-356b-8aD0eebf8c54"));
-        gattServices.put("movesenseHRUUID",UUID.fromString("00002a37-0000-1000-8000-00805f9b34fb"));
+
+        // still need to be implemented currently using ECG UUID as placeholder
+        gattServices.put("heartRate",UUID.fromString("00002a37-0000-1000-8000-00805f9b34fb"));
+        //wind speed
+        gattServices.put("accelX",UUID.fromString("00002a72-0000-1000-8000-00805f9b34fb"));
+        // dew point
+        gattServices.put("accelY",UUID.fromString("00002a7b-0000-1000-8000-00805f9b34fb"));
+        //elevation
+        gattServices.put("accelZ",UUID.fromString("00002a6c-0000-1000-8000-00805f9b34fb"));
+        // time formated year, month, day hour, minute, second
+        gattServices.put("time",UUID.fromString("00002a37-0000-1000-8000-00805f9b34fb"));
+
     }
     public static User getUser() {
         return user;
@@ -95,3 +109,5 @@ public class SmartBandageApp extends Application{
         this.user = user;
     }
 }
+
+

@@ -16,6 +16,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
+import static java.lang.Long.parseLong;
 
 /**
  * Utility class with some helper methods
@@ -43,7 +44,7 @@ public final class Util {
     }
 
     public static String getVisibleSerial(String name) {
-        String result = "";                                  //NON-NLS
+        String result = "";                                  //NON-NLSbyt
         Pattern pattern;
         //if (BuildConfig.DEBUG) {
         // Everything after last whitespace and possible '#'
@@ -243,7 +244,16 @@ public final class Util {
     }
     public static int byteArrayToInteger(byte[] bytes) {
         String hexString = byteArrayToHexString(bytes);
-        return Integer.parseInt(hexString,16);
+        Log.d(TAG, "HexString " + hexString);
+        long val = 0;
+        try {
+            val = parseLong(hexString,16);
+        } catch(NumberFormatException e) {
+            Log.e(TAG, e.getMessage());
+        }
+        int intVal = (int)val;
+        Log.d(TAG, "Twos complement integer " + val);
+        return intVal;
     }
     // Return the IEEE 802.3 CRC32 over given input data with given initial value
     private static long crc32IEEEWithInitial(long initial, byte[] pBuffer, int byteCount) {

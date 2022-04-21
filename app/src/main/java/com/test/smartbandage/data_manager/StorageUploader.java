@@ -44,7 +44,6 @@ public class StorageUploader extends AppCompatActivity {
     }
 
     public void uploadFilesFirebase() {
-
         mAuth = FirebaseAuth.getInstance();
 
         FirebaseUser user = mAuth.getCurrentUser();
@@ -56,18 +55,14 @@ public class StorageUploader extends AppCompatActivity {
             Log.d(LOG_TAG, "FILE UPLOAD COMPLETE");
 
         }
-
     }
 
     public void uploadFileFirebase(File f) {
-        String currentISO8601Timestamp = String.format("%tFT%<tTZ.%<tL",
-                Calendar.getInstance(TimeZone.getTimeZone("Z")));
+        String currentISO8601Timestamp = String.format("%tFT%<tTZ.%<tL", Calendar.getInstance(TimeZone.getTimeZone("Z")));
 
         mAuth = FirebaseAuth.getInstance();
 
         FirebaseUser user = mAuth.getCurrentUser();
-
-
         if(user != null) {
             uploadFile(f, currentISO8601Timestamp);
         }else {
@@ -75,7 +70,6 @@ public class StorageUploader extends AppCompatActivity {
             uploadFile(f, currentISO8601Timestamp);
             Log.d(LOG_TAG, "FILE UPLOAD COMPLETE");
         }
-
     }
     public void uploadFiles() {
         List<File> logsFileList = queryLogsFile();
@@ -118,8 +112,6 @@ public class StorageUploader extends AppCompatActivity {
 
                 }
             });
-
-
     }
 
 

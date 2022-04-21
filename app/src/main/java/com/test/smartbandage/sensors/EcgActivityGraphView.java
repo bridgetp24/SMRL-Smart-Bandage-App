@@ -40,6 +40,7 @@ import com.test.smartbandage.utils.HexString;
 import com.test.smartbandage.utils.Util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
@@ -92,7 +93,7 @@ public class EcgActivityGraphView extends BaseActivity implements BleManager.IBl
     private final CompositeDisposable compositeDisposable = new CompositeDisposable();
     private PublishSubject<Boolean> disconnectTriggerSubject = PublishSubject.create();
     UUID heartRateUUID = SmartBandageApp.gattServices.get("heartRate");
-   // UUID heartRateUUID = SmartBandageApp.gattServices.get("movesenseHRUUID");
+    UUID ecgUUID = SmartBandageApp.gattServices.get("ECG");
     UUID bodySensorLocationUUID = SmartBandageApp.gattServices.get("bodySensorLocation");
     UUID heartRateControlPointUUID = SmartBandageApp.gattServices.get("heartRateControlPoint");
 
@@ -118,10 +119,8 @@ public class EcgActivityGraphView extends BaseActivity implements BleManager.IBl
         mGraphView.getViewport().setMaxX(500);
 
         mGraphView.getViewport().setYAxisBoundsManual(true);
-//        mGraphView.getViewport().setMinY(3000000);
-//        mGraphView.getViewport().setMaxY(5000000);
-        mGraphView.getViewport().setMinY(0);
-        mGraphView.getViewport().setMaxY(5000);
+        mGraphView.getViewport().setMinY(-1000);
+        mGraphView.getViewport().setMaxY(1000);
         mGraphView.getViewport().setScrollable(false);
         mGraphView.getViewport().setScrollableY(false);
 
@@ -213,13 +212,13 @@ public class EcgActivityGraphView extends BaseActivity implements BleManager.IBl
             disableSpinner();
             mDataPointsAppended = 0;
             mCsvLogger.checkRuntimeWriteExternalStoragePermission(this, this);
-            int width = 128 * 3;
+            int width = 128;
             mGraphView.getViewport().setMaxX(width);
             mSeriesECG.resetData(new DataPoint[0]);
             // connect to service
             final Disposable connectionDisposable = connectionObservable
                         .flatMapSingle(RxBleConnection::discoverServices)
-                        .flatMapSingle(rxBleDeviceServices -> rxBleDeviceServices.getCharacteristic(heartRateUUID))
+                        .flatMapSingle(rxBleDeviceServices -> rxBleDeviceServices.getCharacteristic(ecgUUID))
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 characteristic -> {
@@ -227,7 +226,7 @@ public class EcgActivityGraphView extends BaseActivity implements BleManager.IBl
                                     mCsvLogger.appendHeader("Timestamp,Count");
                                     if (GattUtils.isConnected(bleDevice)) {
                                         final Disposable disposable = connectionObservable
-                                                .flatMap(rxBleConnection -> rxBleConnection.setupNotification(heartRateUUID))
+                                                .flatMap(rxBleConnection -> rxBleConnection.setupNotification(ecgUUID))
                                                 .flatMap(notificationObservable -> notificationObservable)
                                                 .observeOn(AndroidSchedulers.mainThread())
                                                 .subscribe(this::onNotificationReceived, this::onNotificationSetupFailure);
@@ -247,8 +246,17 @@ public class EcgActivityGraphView extends BaseActivity implements BleManager.IBl
         }
     }
     private void onNotificationReceived(byte[] bytes) {
-        //noinspection ConstantConditions
-        logECGData(bytes);
+        Log.d(TAG, "Bytes length: " +  bytes.length);
+        int readingsPerNotification = 4;
+        int reading = bytes.length/readingsPerNotification;
+        for(int i = 0; i < readingsPerNotification; i++){
+            // split byte array into a fourth
+            byte[] currRead = Arrays.copyOfRange(bytes,i*reading,(reading*(i+1)));
+            // log reading
+            logECGData(currRead);
+        }
+        //byte[] read1 = Arrays.copyOfRange(bytes,0,reading);
+        //logECGData(bytes);
         Snackbar.make(findViewById(R.id.heart_rate_textView), "Change: " + HexString.bytesToHex(bytes), Snackbar.LENGTH_SHORT).show();
     }
 
@@ -257,17 +265,16 @@ public class EcgActivityGraphView extends BaseActivity implements BleManager.IBl
         Snackbar.make(findViewById(R.id.heart_rate_textView), "Notifications error: " + throwable, Snackbar.LENGTH_SHORT).show();
     }
     private void logECGData(byte[] bytes) {
-        int width = 128 * 3;
+        int width = 128;
         int bytesInt = Util.byteArrayToInteger(bytes);
-        Log.d(TAG, "logging " + bytesInt);
+        Log.d(TAG, "logging int " + bytesInt);
         String timestamp = String.format("%tFT%<tTZ.%<tL", Calendar.getInstance(TimeZone.getTimeZone("Z")));
         mCsvLogger.appendLine(String.format(Locale.getDefault(),
                 "%s,%d", timestamp,
                 bytesInt));
-        bytesInt = bytesInt - 4200000;
         mSeriesECG.appendData(new DataPoint(mDataPointsAppended,bytesInt),false, width);
-        mDataPointsAppended++;
-        if (mDataPointsAppended == 400) {
+        mDataPointsAppended+=1;
+        if (mDataPointsAppended == 128) {
             mDataPointsAppended = 0;
             mSeriesECG.resetData(new DataPoint[0]);
         }

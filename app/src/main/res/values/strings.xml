@@ -5,11 +5,16 @@
     <string name="battery_energy">Battery</string>
     <string name="ecg">ECG</string>
     <string name="battery_value">Battery value : </string>
+    <string name="linear_acceleration">Linear Acceleration</string>
+    <string name="test_linear_acceleration">Test: Linear Acceleration</string>
     <string name="exit">Exit</string>
     <string name="disconnect_dialog_text">Leaving from this view will disconnect You with device. Are You sure want leave?</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="btn_get">Get</string>
+    <string name="y">y:</string>
+    <string name="x">x:</string>
+    <string name="z">z:</string>
     <string name="refresh_files">Refresh Files</string>
     <string name="please_wait_connecting">Connecting may take 10-30s \nPlease Wait...</string>
     <string name="connecting">Connecting</string>

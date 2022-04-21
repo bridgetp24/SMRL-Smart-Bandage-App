@@ -20,6 +20,7 @@ import com.test.smartbandage.BaseActivity;
 import com.test.smartbandage.MainViewActivity;
 import com.test.smartbandage.R;
 import com.test.smartbandage.bluetooth.RxBle;
+import com.test.smartbandage.model.LinearAcceleration;
 
 
 import java.util.ArrayList;
@@ -56,9 +57,10 @@ public class SensorListActivity extends BaseActivity implements View.OnClickList
 
         ArrayList<SensorListItemModel> sensorListItemModels = new ArrayList<>();
 
-        sensorListItemModels.add(new SensorListItemModel(getString(R.string.battery_energy)));
+        sensorListItemModels.add(new SensorListItemModel(getString(R.string.linear_acceleration)));
         sensorListItemModels.add(new SensorListItemModel(getString(R.string.ecg)));
         sensorListItemModels.add(new SensorListItemModel(getString(R.string.deviceInfo)));
+        sensorListItemModels.add(new SensorListItemModel(getString(R.string.battery_energy)));
 
 
         SensorsListAdapter sensorsListAdapter = new SensorsListAdapter(sensorListItemModels, this);
@@ -118,11 +120,16 @@ public class SensorListActivity extends BaseActivity implements View.OnClickList
             final Intent intent = new Intent(this, DeviceInformationActivity.class);
             intent.putExtra(EXTRA_MAC_ADDRESS, macAddress);
             startActivity(intent);
+        }else if (getString(R.string.linear_acceleration).equals(sensorName)) {
+            final Intent intent = new Intent(this, LinearAccelerationTestActivity.class);
+            intent.putExtra(EXTRA_MAC_ADDRESS, macAddress);
+            startActivity(intent);
         }
 }
 
     @Override
     public void onBackPressed() {
-        startActivity(new Intent(this, com.test.smartbandage.data_manager.DataManagerActivity.class));
+        super.onBackPressed();
+        startActivity(new Intent(this, com.test.smartbandage.bluetooth.connection.ConnectionActivity.class));
     }
 }

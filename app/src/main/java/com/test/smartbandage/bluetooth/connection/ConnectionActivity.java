@@ -274,12 +274,6 @@ public class ConnectionActivity extends AppCompatActivity implements MovesenseCo
         Log.d(TAG, "mMacAddress:" + mMacAddress);
         intent.putExtra(SensorListActivity.EXTRA_MAC_ADDRESS, mMacAddress);
         startActivity(intent);
-
-//        connectionDisposable = bleDevice.establishConnection(false)
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .doFinally(this::dispose)
-//                .subscribe(this::onConnectionReceived, this::showConnectionError);
-
     }
 
     @Override
@@ -317,6 +311,11 @@ public class ConnectionActivity extends AppCompatActivity implements MovesenseCo
     }
     private void dispose() {
         connectionDisposable = null;
+    }
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        startActivity(new Intent(this, com.test.smartbandage.MainViewActivity.class));
     }
 }
 

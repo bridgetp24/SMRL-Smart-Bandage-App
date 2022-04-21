@@ -65,6 +65,9 @@
         <activity
             android:name="com.test.smartbandage.data_manager.DataManagerActivity"
             android:screenOrientation="portrait"/>
+        <activity
+            android:name="com.test.smartbandage.sensors.LinearAccelerationTestActivity"
+            android:screenOrientation="portrait"/>
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"

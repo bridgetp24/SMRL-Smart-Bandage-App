@@ -110,9 +110,9 @@ public class CsvLogger {
         // name, timestamp, tag, user id
         sb.append(deviceName).append("_").
                 append(currentISO8601Timestamp).append("_")
-                .append(tag).append("_");
-        //TODO: fix adding user id to file name
-    //.append(SmartBandageApp.getUser().getId()
+                .append(tag).append("_")
+                .append(SmartBandageApp.getUser().getId());
+
         return sb.toString();
     }
 
