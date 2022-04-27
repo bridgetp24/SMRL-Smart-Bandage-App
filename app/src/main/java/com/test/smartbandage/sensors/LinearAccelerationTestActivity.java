@@ -1,9 +1,12 @@
 package com.test.smartbandage.sensors;
 
 
+import android.bluetooth.BluetoothGattCharacteristic;
+import android.bluetooth.BluetoothGattService;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.Pair;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -28,6 +31,7 @@ import com.google.gson.Gson;
 import com.jjoe64.graphview.series.DataPoint;
 import com.polidea.rxandroidble2.RxBleConnection;
 import com.polidea.rxandroidble2.RxBleDevice;
+import com.polidea.rxandroidble2.RxBleDeviceServices;
 import com.test.smartbandage.BaseActivity;
 import com.test.smartbandage.R;
 import com.test.smartbandage.SmartBandageApp;
@@ -75,7 +79,9 @@ public class LinearAccelerationTestActivity extends BaseActivity {
     private final CompositeDisposable compositeDisposable = new CompositeDisposable();
     private String rate;
     UUID accelXUUID = SmartBandageApp.gattServices.get("accelX");
-
+    UUID accelYUUID = SmartBandageApp.gattServices.get("accelY");
+    UUID accelZUUID = SmartBandageApp.gattServices.get("accelZ");
+    UUID serviceUUID = UUID.fromString("0000181a-0000-1000-8000-00805f9b34fb");
     @BindView(R.id.switchSubscription)
     SwitchCompat switchSubscription;
     @BindView(R.id.spinner) Spinner spinner;
@@ -87,6 +93,7 @@ public class LinearAccelerationTestActivity extends BaseActivity {
     @BindView(R.id.linearAcc_lineChart) LineChart mChart;
     private AlertDialog alertDialog;
     private CsvLogger mCsvLogger;
+    LineData mLineData;
     private boolean isLogSaved = false;
 
 
@@ -135,35 +142,32 @@ public class LinearAccelerationTestActivity extends BaseActivity {
                 "%s,%d", timestamp,
                 bytesInt));
         // plot in UI
-        int[] bytesIntArr = new int[0];
-        long timestampNum = 0;
+        int[] bytesIntArr = new int[3];
+        bytesIntArr[0] = 0;
+        bytesIntArr[1] = bytesInt;
+        bytesIntArr[2] = 0;
+        long timestampNum =  System.currentTimeMillis()/1000;
+
         // need timestamp, x, y, z
-        //updateData(timestampNum,bytesIntArr);
+        updateData(timestampNum,bytesIntArr);
     }
     private void updateData(long timestamp, int[] arrayData) {
-        LineData mLineData = mChart.getData();
-        if (arrayData != null) {
-//
-//            mCsvLogger.appendHeader("Timestamp (ms),X: (m/s^2),Y: (m/s^2),Z: (m/s^2)");
-//
-//            mCsvLogger.appendLine(String.format(Locale.getDefault(),
-//                    "%d,%.6f,%.6f,%.6f, ", timestamp,
-//                    arrayData[0], arrayData[1], arrayData[2]));
 
+        if (arrayData != null) {
             xAxisTextView.setText(String.format(Locale.getDefault(),
-                    "x: %.6f", arrayData[0]));
+                    "x: %d", arrayData[0]));
             yAxisTextView.setText(String.format(Locale.getDefault(),
-                    "y: %.6f", arrayData[1]));
+                    "y: %d", arrayData[1]));
             zAxisTextView.setText(String.format(Locale.getDefault(),
-                    "z: %.6f", arrayData[2]));
+                    "z: %d", arrayData[2]));
 
             //Log.e(LOG_TAG, "onNotification: timestamp: " + timestamp + " x: " + arrayData.x);
-            Log.e(LOG_TAG, "onNotification: lineData.getEntryCount(): " + mLineData.getEntryCount());
-            mLineData.addEntry(new Entry(timestamp / 100, (float) arrayData[0]), 0);
-            mLineData.addEntry(new Entry(timestamp / 100, (float) arrayData[1]), 1);
-            mLineData.addEntry(new Entry(timestamp / 100, (float) arrayData[2]), 2);
+            Log.d(LOG_TAG, "onNotification: lineData.getEntryCount(): " + mLineData.getEntryCount());
+            mLineData.addEntry(new Entry(mLineData.getEntryCount(), (float) arrayData[0]), 0);
+            mLineData.addEntry(new Entry(mLineData.getEntryCount(), (float) arrayData[1]), 1);
+            mLineData.addEntry(new Entry(mLineData.getEntryCount(), (float) arrayData[2]), 2);
             mLineData.notifyDataChanged();
-
+            Log.d(LOG_TAG, "notifydatasetchanged");
             // let the chart know it's data has changed
             mChart.notifyDataSetChanged();
 
@@ -172,25 +176,92 @@ public class LinearAccelerationTestActivity extends BaseActivity {
 
             // move to the latest entry
             mChart.moveViewToX(timestamp / 100);
-
-        ILineDataSet xSet = mLineData.getDataSetByIndex(0);
-        ILineDataSet ySet = mLineData.getDataSetByIndex(1);
-        ILineDataSet zSet = mLineData.getDataSetByIndex(2);
-
-        if (xSet == null) {
-            xSet = createSet("Data x", getResources().getColor(android.R.color.holo_red_dark));
-            ySet = createSet("Data y", getResources().getColor(android.R.color.holo_green_dark));
-            zSet = createSet("Data z", getResources().getColor(android.R.color.holo_blue_dark));
-            mLineData.addDataSet(xSet);
-            mLineData.addDataSet(ySet);
-            mLineData.addDataSet(zSet);
         }
-    }
     }
     private void onNotificationReceived(byte[] bytes) {
         Log.d(LOG_TAG,"Notification Received");
         Log.d(LOG_TAG,"Byte array length: " + bytes.length);
         logLinAccelData(bytes);
+    }
+    private void onNotificationReceivedX(byte[] bytes) {
+        Log.d(LOG_TAG,"Notification Received from X!!");
+        int bytesInt = logCSV(bytes,"X");
+        // plot in UI
+        int[] bytesIntArr = new int[3];
+        bytesIntArr[0] = bytesInt;
+        bytesIntArr[1] = 0;
+        bytesIntArr[2] = 0;
+        long timestampNum =  System.currentTimeMillis()/1000;
+
+        // need timestamp, x, y, z
+        displayData(timestampNum,bytesIntArr);
+
+    }
+
+    private void displayData( long timestamp, int[] arrayData){
+        if (arrayData != null) {
+            xAxisTextView.setText(String.format(Locale.getDefault(),
+                    "x: %d", arrayData[0]));
+            yAxisTextView.setText(String.format(Locale.getDefault(),
+                    "y: %d", arrayData[1]));
+            zAxisTextView.setText(String.format(Locale.getDefault(),
+                    "z: %d", arrayData[2]));
+
+            //Log.e(LOG_TAG, "onNotification: timestamp: " + timestamp + " x: " + arrayData.x);
+            Log.d(LOG_TAG, "onNotification: lineData.getEntryCount(): " + mLineData.getEntryCount());
+            mLineData.addEntry(new Entry(mLineData.getEntryCount(), (float) arrayData[0]), 0);
+            mLineData.addEntry(new Entry(mLineData.getEntryCount(), (float) arrayData[1]), 1);
+            mLineData.addEntry(new Entry(mLineData.getEntryCount(), (float) arrayData[2]), 2);
+            mLineData.notifyDataChanged();
+            Log.d(LOG_TAG, "notifydatasetchanged");
+            // let the chart know it's data has changed
+            mChart.notifyDataSetChanged();
+
+            // limit the number of visible entries
+            mChart.setVisibleXRangeMaximum(50);
+
+            // move to the latest entry
+            mChart.moveViewToX(timestamp / 100);
+        }
+    }
+
+    private void onNotificationReceivedY(byte[] bytes) {
+        Log.d(LOG_TAG,"Notification Received from Y!!");
+        int bytesInt = logCSV(bytes,"Y");
+
+        // plot in UI
+        int[] bytesIntArr = new int[3];
+        bytesIntArr[0] = 0;
+        bytesIntArr[1] = bytesInt;
+        bytesIntArr[2] = 0;
+        long timestampNum =  System.currentTimeMillis()/1000;
+
+        // need timestamp, x, y, z
+        displayData(timestampNum,bytesIntArr);
+    }
+    private void onNotificationReceivedZ(byte[] bytes) {
+        Log.d(LOG_TAG,"Notification Received from Z!!");
+        int bytesInt = logCSV(bytes,"Z");
+
+        // plot in UI
+        int[] bytesIntArr = new int[3];
+        bytesIntArr[0] = 0;
+        bytesIntArr[1] = 0;
+        bytesIntArr[2] = bytesInt;
+        long timestampNum =  System.currentTimeMillis()/1000;
+
+        // need timestamp, x, y, z
+        displayData(timestampNum,bytesIntArr);
+    }
+    private int logCSV(byte[] bytes, String label) {
+        int bytesInt = Util.byteArrayToInteger(bytes);
+        Log.d(LOG_TAG, "logging " + bytesInt + " from " + label);
+        String timestamp = String.format("%tFT%<tTZ.%<tL", Calendar.getInstance(TimeZone.getTimeZone("Z")));
+        mCsvLogger.appendLine(String.format(Locale.getDefault(),
+                "%s,%s,%d", label,timestamp,
+                bytesInt));
+
+        return bytesInt;
     }
 
     private void onNotificationSetupFailure(Throwable throwable) {
@@ -202,42 +273,191 @@ public class LinearAccelerationTestActivity extends BaseActivity {
     public void onCheckedChanged(final CompoundButton buttonView, boolean isChecked) {
         if (isChecked) {
             disableSpinner();
-
             isLogSaved = false;
-
             mCsvLogger.checkRuntimeWriteExternalStoragePermission(this, this);
+            mLineData = mChart.getData();
 
+            ILineDataSet xSet = mLineData.getDataSetByIndex(0);
+            ILineDataSet ySet = mLineData.getDataSetByIndex(1);
+            ILineDataSet zSet = mLineData.getDataSetByIndex(2);
 
-
-           // connect to device
+            if (xSet == null) {
+                xSet = createSet("Data x", getResources().getColor(android.R.color.holo_red_dark));
+                ySet = createSet("Data y", getResources().getColor(android.R.color.holo_green_dark));
+                zSet = createSet("Data z", getResources().getColor(android.R.color.holo_blue_dark));
+                mLineData.addDataSet(xSet);
+                mLineData.addDataSet(ySet);
+                mLineData.addDataSet(zSet);
+            }
             final Disposable connectionDisposable = connectionObservable
-                    .flatMapSingle(RxBleConnection::discoverServices)
-                    .flatMapSingle(rxBleDeviceServices -> rxBleDeviceServices.getCharacteristic(accelXUUID))
+                    .flatMap(connection -> connection.discoverServices()
+                                    .map(RxBleDeviceServices::getBluetoothGattServices)
+                                    .flatMapObservable(Observable::fromIterable) // map to individual services
+                                    .map(BluetoothGattService::getCharacteristics) // for each service take all characteristics)
+                                    .flatMap(Observable::fromIterable) // map to individual characteristic)
+                            .filter(characteristic -> (BluetoothGattCharacteristic.PROPERTY_READ | BluetoothGattCharacteristic.PROPERTY_WRITE | BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE) != 0) // consider only characteristics that have indicate or notify property
+
+                    )
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
                             characteristic -> {
-                                Log.i(GattUtils.class.getSimpleName(), "Hey, connection has been established!");
-                                mCsvLogger.appendHeader("Timestamp,Count");
-                                if (GattUtils.isConnected(bleDevice)) {
-                                    final Disposable disposable = connectionObservable
-                                            .flatMap(rxBleConnection -> rxBleConnection.setupNotification(accelXUUID))
-                                            .flatMap(notificationObservable -> notificationObservable)
-                                            .observeOn(AndroidSchedulers.mainThread())
-                                            .subscribe(this::onNotificationReceived, this::onNotificationSetupFailure);
-                                    compositeDisposable.add(disposable);
-                                } else {
-                                    Log.d(LOG_TAG, "Device not connected");
+                                if(characteristic.toString().equals("android.bluetooth.BluetoothGattCharacteristic@8d2b5d7")) {
+                                    Log.d(LOG_TAG, "Hey X was found");
+                                    Log.d(LOG_TAG, "Characteristic X " + characteristic);
+                                    Log.i(GattUtils.class.getSimpleName(), "Hey, connection has been established! to x");
+                                    mCsvLogger.appendHeader("Type,Timestamp,Value");
+                                    if (GattUtils.isConnected(bleDevice)) {
+                                        final Disposable disposable = connectionObservable
+                                                .flatMap(rxBleConnection -> rxBleConnection.setupNotification(accelXUUID))
+                                                .flatMap(notificationObservable -> notificationObservable)
+                                                .observeOn(AndroidSchedulers.mainThread())
+                                                .subscribe(this::onNotificationReceivedX, this::onNotificationSetupFailure);
+                                        compositeDisposable.add(disposable);
+                                    } else {
+                                        Log.d(LOG_TAG, "Device not connected");
+                                    }
+                                }
+                                if(characteristic.toString().equals("android.bluetooth.BluetoothGattCharacteristic@557df71")) {
+                                    Log.d(LOG_TAG, "Hey Y was found");
+                                    Log.i(GattUtils.class.getSimpleName(), "Hey, connection has been established! to y");
+                                    mCsvLogger.appendHeader("Timestamp,Count");
+                                    if (GattUtils.isConnected(bleDevice)) {
+                                        final Disposable disposable = connectionObservable
+                                                .flatMap(rxBleConnection -> rxBleConnection.setupNotification(accelYUUID))
+                                                .flatMap(notificationObservable -> notificationObservable)
+                                                .observeOn(AndroidSchedulers.mainThread())
+                                                .subscribe(this::onNotificationReceivedY, this::onNotificationSetupFailure);
+                                        compositeDisposable.add(disposable);
+                                    } else {
+                                        Log.d(LOG_TAG, "Device not connected");
+                                    }
+                                }
+                                if(characteristic.toString().equals("android.bluetooth.BluetoothGattCharacteristic@3ba01ad")) {
+                                    Log.d(LOG_TAG, "Characteristic Z " + characteristic);
+                                    Log.i(GattUtils.class.getSimpleName(), "Hey, connection has been established! to z");
+                                    mCsvLogger.appendHeader("Timestamp,Count");
+                                    if (GattUtils.isConnected(bleDevice)) {
+                                        final Disposable disposable = connectionObservable
+                                                .flatMap(rxBleConnection -> rxBleConnection.setupNotification(accelZUUID))
+                                                .flatMap(notificationObservable -> notificationObservable)
+                                                .observeOn(AndroidSchedulers.mainThread())
+                                                .subscribe(this::onNotificationReceivedZ, this::onNotificationSetupFailure);
+                                        compositeDisposable.add(disposable);
+                                    }
                                 }
                             },
                             GattUtils::onConnectionFailure,
                             GattUtils::onConnectionFinished
                     );
+
             compositeDisposable.add(connectionDisposable);
         } else {
             unSubscribe();
             enableSpinner();
         }
     }
+
+//    Connect to all 3 separately 
+//    @OnCheckedChanged(R.id.switchSubscription)
+//    public void onCheckedChanged(final CompoundButton buttonView, boolean isChecked) {
+//        if (isChecked) {
+//            disableSpinner();
+//            isLogSaved = false;
+//            mCsvLogger.checkRuntimeWriteExternalStoragePermission(this, this);
+//            mLineData = mChart.getData();
+//
+//            ILineDataSet xSet = mLineData.getDataSetByIndex(0);
+//            ILineDataSet ySet = mLineData.getDataSetByIndex(1);
+//            ILineDataSet zSet = mLineData.getDataSetByIndex(2);
+//
+//            if (xSet == null) {
+//                xSet = createSet("Data x", getResources().getColor(android.R.color.holo_red_dark));
+//                ySet = createSet("Data y", getResources().getColor(android.R.color.holo_green_dark));
+//                zSet = createSet("Data z", getResources().getColor(android.R.color.holo_blue_dark));
+//                mLineData.addDataSet(xSet);
+//                mLineData.addDataSet(ySet);
+//                mLineData.addDataSet(zSet);
+//            }
+//
+//           // connect to device
+//            final Disposable connectionDisposableX = connectionObservable
+//                    .flatMapSingle(RxBleConnection::discoverServices)
+//                    .flatMapSingle(rxBleDeviceServices -> rxBleDeviceServices.getCharacteristic(accelXUUID))
+//                    .observeOn(AndroidSchedulers.mainThread())
+//                    .subscribe(
+//                            characteristic -> {
+//                                Log.d(LOG_TAG, "Characteristic X " + characteristic);
+//                                Log.i(GattUtils.class.getSimpleName(), "Hey, connection has been established! to x");
+//                                mCsvLogger.appendHeader("Type,Timestamp,Value");
+//                                if (GattUtils.isConnected(bleDevice)) {
+//                                    final Disposable disposable = connectionObservable
+//                                            .flatMap(rxBleConnection -> rxBleConnection.setupNotification(accelXUUID))
+//                                            .flatMap(notificationObservable -> notificationObservable)
+//                                            .observeOn(AndroidSchedulers.mainThread())
+//                                            .subscribe(this::onNotificationReceivedX, this::onNotificationSetupFailure);
+//                                    compositeDisposable.add(disposable);
+//                                } else {
+//                                    Log.d(LOG_TAG, "Device not connected");
+//                                }
+//                            },
+//                            GattUtils::onConnectionFailure,
+//                            GattUtils::onConnectionFinished
+//                    );
+//            compositeDisposable.add(connectionDisposableX);
+//
+//            final Disposable connectionDisposableY = connectionObservable
+//                    .flatMapSingle(RxBleConnection::discoverServices)
+//                    .flatMapSingle(rxBleDeviceServices -> rxBleDeviceServices.getCharacteristic(accelYUUID))
+//                    .observeOn(AndroidSchedulers.mainThread())
+//                    .subscribe(
+//                            characteristic -> {
+//                                Log.d(LOG_TAG, "Characteristic Y " + characteristic);
+//                                Log.i(GattUtils.class.getSimpleName(), "Hey, connection has been established! to y");
+//                                mCsvLogger.appendHeader("Timestamp,Count");
+//                                if (GattUtils.isConnected(bleDevice)) {
+//                                    final Disposable disposable = connectionObservable
+//                                            .flatMap(rxBleConnection -> rxBleConnection.setupNotification(accelYUUID))
+//                                            .flatMap(notificationObservable -> notificationObservable)
+//                                            .observeOn(AndroidSchedulers.mainThread())
+//                                            .subscribe(this::onNotificationReceivedY, this::onNotificationSetupFailure);
+//                                    compositeDisposable.add(disposable);
+//                                } else {
+//                                    Log.d(LOG_TAG, "Device not connected");
+//                                }
+//                            },
+//                            GattUtils::onConnectionFailure,
+//                            GattUtils::onConnectionFinished
+//                    );
+//            compositeDisposable.add(connectionDisposableY);
+//            final Disposable connectionDisposableZ = connectionObservable
+//                    .flatMapSingle(RxBleConnection::discoverServices)
+//                    .flatMapSingle(rxBleDeviceServices -> rxBleDeviceServices.getCharacteristic(accelZUUID))
+//                    .observeOn(AndroidSchedulers.mainThread())
+//                    .subscribe(
+//                            characteristic -> {
+//                                Log.d(LOG_TAG, "Characteristic Z " + characteristic);
+//                                Log.i(GattUtils.class.getSimpleName(), "Hey, connection has been established! to z");
+//                                mCsvLogger.appendHeader("Timestamp,Count");
+//                                if (GattUtils.isConnected(bleDevice)) {
+//                                    final Disposable disposable = connectionObservable
+//                                            .flatMap(rxBleConnection -> rxBleConnection.setupNotification(accelZUUID))
+//                                            .flatMap(notificationObservable -> notificationObservable)
+//                                            .observeOn(AndroidSchedulers.mainThread())
+//                                            .subscribe(this::onNotificationReceivedZ, this::onNotificationSetupFailure);
+//                                    compositeDisposable.add(disposable);
+//                                } else {
+//                                    Log.d(LOG_TAG, "Device not connected");
+//                                }
+//                            },
+//                            GattUtils::onConnectionFailure,
+//                            GattUtils::onConnectionFinished
+//                    );
+//            compositeDisposable.add(connectionDisposableZ);
+//        } else {
+//            unSubscribe();
+//            enableSpinner();
+//        }
+//    }
 
     @OnItemSelected(R.id.spinner)
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
