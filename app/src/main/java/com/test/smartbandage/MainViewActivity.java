@@ -19,8 +19,8 @@ public class MainViewActivity extends AppCompatActivity {
 
     @BindView(R.id.mainView_movesense_Ll)
     RelativeLayout mMainViewMovesenseLl;
-    @BindView(R.id.mainView_multiConnection_Ll)
-    RelativeLayout mMainViewMultiConnectionLl;
+//    @BindView(R.id.mainView_multiConnection_Ll)
+//    RelativeLayout mMainViewMultiConnectionLl;
     @BindView(R.id.mainView_savedData_Ll)
    RelativeLayout mMainViewSavedDataLl;
 
@@ -36,16 +36,13 @@ public class MainViewActivity extends AppCompatActivity {
     }
 
 
-    @OnClick({R.id.mainView_movesense_Ll, R.id.mainView_multiConnection_Ll, R.id.mainView_savedData_Ll})
+    @OnClick({R.id.mainView_movesense_Ll, R.id.mainView_savedData_Ll})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.mainView_movesense_Ll:
                 Log.d(TAG, "Starting connection intent");
                 startActivity(new Intent(com.test.smartbandage.MainViewActivity.this, com.test.smartbandage.bluetooth.connection.ConnectionActivity.class));
 
-                break;
-            case R.id.mainView_multiConnection_Ll:
-                Log.d(TAG, "Starting multi connection intent");
                 break;
 
             case R.id.mainView_savedData_Ll:
